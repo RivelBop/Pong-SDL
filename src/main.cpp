@@ -9,12 +9,17 @@ static SDL_Renderer *renderer = NULL;
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
+    /* Change render/gpu driver to opengl (significant rendering performance improvement) */
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+    SDL_SetHint(SDL_HINT_GPU_DRIVER, "opengl");
+
     /* Create the window */
-    if (!SDL_CreateWindowAndRenderer("Pong", pong::SCREEN_WIDTH, pong::SCREEN_HEIGHT, 0, &window, &renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Pong", pong::SCREEN_WIDTH, pong::SCREEN_HEIGHT, SDL_WINDOW_OPENGL, &window, &renderer)) {
         SDL_Log("Couldn't create window and renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
+    /* Initialize the Pong Game! */
     pong::init();
     return SDL_APP_CONTINUE;
 }
@@ -34,26 +39,13 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 {
     pong::update();
 
-    const char *message = "Pong";
-    int w = 0, h = 0;
-    float x, y;
-    const float scale = 4.0f;
-
-    /* Center the message and scale it up */
-    SDL_GetRenderOutputSize(renderer, &w, &h);
-    SDL_SetRenderScale(renderer, scale, scale);
-    x = ((w / scale) - SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE * SDL_strlen(message)) / 2;
-    y = ((h / scale) - SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE) / 2;
-
-    /* Draw the message */
+    /* Clear the screen */
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderDebugText(renderer, x, y, message);
 
-    SDL_SetRenderScale(renderer, 1.0f, 1.0f);
-    SDL_RenderRect(renderer, pong::player_paddle);
-    SDL_RenderRect(renderer, pong::enemy_paddle);
+    /* Draw to the screen */
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    pong::render(renderer);
     SDL_RenderPresent(renderer);
 
     return SDL_APP_CONTINUE;
@@ -62,5 +54,4 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 /* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
-    pong::dispose();
 }

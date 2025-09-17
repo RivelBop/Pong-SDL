@@ -1,37 +1,36 @@
 #include "pong.h"
 
-static Uint64 previous = SDL_GetTicks();
 static float tickTimer = 0.0;
+static SDL_FRect player_paddle;
+static SDL_FRect enemy_paddle;
 
 namespace pong {
-    SDL_FRect *player_paddle = new SDL_FRect();
-    SDL_FRect *enemy_paddle = new SDL_FRect();
-    
     void init() {
         // Setup player paddle
-        SDL_FRect &p = *player_paddle;
-        p.w = PADDLE_WIDTH;
-        p.h = PADDLE_HEIGHT;
-        p.x = SCREEN_WIDTH / 8.0f;               // Left x-pos
-        p.y = SCREEN_HEIGHT / 2.0f - p.h / 2.0f; // Center y-pos
+        player_paddle.w = PADDLE_WIDTH;
+        player_paddle.h = PADDLE_HEIGHT;
+        player_paddle.x = SCREEN_WIDTH / 8.0f;                         // Left x-pos
+        player_paddle.y = SCREEN_HEIGHT / 2.0f - PADDLE_HEIGHT / 2.0f; // Center y-pos
 
         // Setup enemy paddle
-        SDL_FRect &e = *enemy_paddle;
-        e.w = PADDLE_WIDTH;
-        e.h = PADDLE_HEIGHT;
-        e.x = SCREEN_WIDTH - SCREEN_WIDTH / 8.0f - e.w; // Right x-pos
-        e.y = SCREEN_HEIGHT / 2.0f - p.h / 2.0f;        // Center y-pos
+        enemy_paddle.w = PADDLE_WIDTH;
+        enemy_paddle.h = PADDLE_HEIGHT;
+        enemy_paddle.x = SCREEN_WIDTH - SCREEN_WIDTH / 8.0f - PADDLE_WIDTH; // Right x-pos
+        enemy_paddle.y = SCREEN_HEIGHT / 2.0f - PADDLE_HEIGHT / 2.0f;       // Center y-pos
     }
 
-    void tick() {
-        SDL_Log("Hey this is PONG!");
+    static void tick() {
     }
 
     void update() {
-        Uint64 current = SDL_GetTicks();
-        float deltaTime = (current - previous) / 1000.0f;
+        using namespace std::chrono;
+        static auto previous = high_resolution_clock::now();
+        
+        auto current = high_resolution_clock::now();
+        duration<float> time_span = duration_cast<duration<float>>(current - previous);
         previous = current;
 
+        float deltaTime = time_span.count();
         tickTimer += deltaTime;
         while (tickTimer >= TICK_RATE) {
             tick();
@@ -39,8 +38,8 @@ namespace pong {
         }
     }
 
-    void dispose() {
-        delete player_paddle;
-        delete enemy_paddle;
+    void render(SDL_Renderer *renderer) {
+        SDL_RenderFillRect(renderer, &player_paddle);
+        SDL_RenderFillRect(renderer, &enemy_paddle);
     }
 }
