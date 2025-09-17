@@ -1,3 +1,4 @@
+vendored/
 build/
 build-*/
 !build-scripts/

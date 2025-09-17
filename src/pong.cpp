@@ -1,5 +1,6 @@
 #include "pong.h"
 
+static bool keysDown[322] = {0}; // 322 is the number of SDLK down events
 static float tickTimer = 0.0;
 static SDL_FRect player_paddle;
 static SDL_FRect enemy_paddle;
@@ -19,7 +20,28 @@ namespace pong {
         enemy_paddle.y = SCREEN_HEIGHT / 2.0f - PADDLE_HEIGHT / 2.0f;       // Center y-pos
     }
 
+    void input(const SDL_Event &event) {
+        if (event.type == SDL_EVENT_KEY_DOWN) {
+            keysDown[event.key.key] = true;
+        } else if (event.type == SDL_EVENT_KEY_UP) {
+            keysDown[event.key.key] = false;
+        }
+    }
+
     static void tick() {
+        if (keysDown[SDLK_W] || keysDown[SDLK_UP]) {
+            player_paddle.y -= (PADDLE_SPEED * TICK_RATE);
+        }
+
+        if (keysDown[SDLK_S] || keysDown[SDLK_DOWN]) {
+            player_paddle.y += (PADDLE_SPEED * TICK_RATE);
+        }
+
+        if (player_paddle.y < 0) {
+            player_paddle.y = 0;
+        } else if (player_paddle.y + PADDLE_HEIGHT > SCREEN_HEIGHT) {
+            player_paddle.y = SCREEN_HEIGHT - PADDLE_HEIGHT;
+        }
     }
 
     void update() {

@@ -10,10 +10,12 @@ namespace pong {
     constexpr int SCREEN_HEIGHT = 480;
     constexpr float TICK_RATE = 1.0f / 20.0f;
 
+    constexpr float PADDLE_SPEED = 150.0f;
     constexpr float PADDLE_WIDTH = 16.0f;
     constexpr float PADDLE_HEIGHT = 80.0f;
 
     void init();                          // Initializes the game's elements
+    void input(const SDL_Event &event);   // Simple input handling
     void update();                        // Updates the game's elements
     void render(SDL_Renderer *renderer);  // Renders the game's elements
 }
