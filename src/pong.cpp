@@ -2,8 +2,8 @@
 #include <chrono>
 #include "pong.h"
 
-static std::unordered_map<SDL_Keycode, bool> keysDown {}; // Keeps track of all keys that are held down
-static float tickTimer {0.0f};                            // Keeps track of tick time to accurately call tick()
+static std::unordered_map<SDL_Keycode, bool> keys_down {}; // Keeps track of all keys that are held down
+static float tick_timer {0.0f};                            // Keeps track of tick time to accurately call tick()
 
 namespace Pong {
     static SDL_FRect player_paddle {0.0f, 0.0f, paddle_width, paddle_height};
@@ -23,18 +23,18 @@ namespace Pong {
     void input(const SDL_Event &event)
     {
         if (event.type == SDL_EVENT_KEY_DOWN) {
-            keysDown[event.key.key] = true;  // Store true for key ID if held down
+            keys_down[event.key.key] = true;  // Store true for key ID if held down
         } else if (event.type == SDL_EVENT_KEY_UP) {
-            keysDown[event.key.key] = false; // Store false for key ID if up (let go)
+            keys_down[event.key.key] = false; // Store false for key ID if up (let go)
         }
     }
 
     static void tick()
     {
-        if (keysDown[SDLK_W] || keysDown[SDLK_UP]) {   // Hold up
+        if (keys_down[SDLK_W] || keys_down[SDLK_UP]) {   // Hold up
             player_paddle.y -= (paddle_speed * tick_rate);
         }
-        if (keysDown[SDLK_S] || keysDown[SDLK_DOWN]) { // Hold down
+        if (keys_down[SDLK_S] || keys_down[SDLK_DOWN]) { // Hold down
             player_paddle.y += (paddle_speed * tick_rate);
         }
 
@@ -55,11 +55,11 @@ namespace Pong {
         duration<float> time_span = duration_cast<duration<float>>(current - previous);
         previous = current;
 
-        float deltaTime = time_span.count();
-        tickTimer += deltaTime;
-        while (tickTimer >= tick_rate) {
+        float delta_time = time_span.count();
+        tick_timer += delta_time;
+        while (tick_timer >= tick_rate) {
             tick();
-            tickTimer -= tick_rate;
+            tick_timer -= tick_rate;
         }
     }
 
