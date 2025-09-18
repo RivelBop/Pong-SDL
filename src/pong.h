@@ -1,23 +1,21 @@
-// Same as #pragma once
-#ifndef PONG_H_
-#define PONG_H_
+#ifndef PONG_H
+#define PONG_H
 
 #include <SDL3/SDL.h>
-#include <chrono>
 
-namespace pong {
-    constexpr int SCREEN_WIDTH = 640;
-    constexpr int SCREEN_HEIGHT = 480;
-    constexpr float TICK_RATE = 1.0f / 20.0f;
+namespace Pong {
+    constexpr int   screen_width  {640};
+    constexpr int   screen_height {480};
+    constexpr float tick_rate     {1.0f / 60.0f};
 
-    constexpr float PADDLE_SPEED = 150.0f;
-    constexpr float PADDLE_WIDTH = 16.0f;
-    constexpr float PADDLE_HEIGHT = 80.0f;
+    constexpr float paddle_speed  {275.0f};
+    constexpr float paddle_width  {16.0f};
+    constexpr float paddle_height {80.0f};
 
-    void init();                          // Initializes the game's elements
-    void input(const SDL_Event &event);   // Simple input handling
-    void update();                        // Updates the game's elements
-    void render(SDL_Renderer *renderer);  // Renders the game's elements
+    void init();                         // Initializes the game's elements
+    void input(const SDL_Event &event);  // Simple input handling
+    void update();                       // Updates the game's elements
+    void render(SDL_Renderer &renderer); // Renders the game's elements
 }
 
-#endif // PONG_H_
+#endif // PONG_H

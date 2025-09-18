@@ -1,50 +1,53 @@
+#include <unordered_map>
+#include <chrono>
 #include "pong.h"
 
-static bool keysDown[322] = {0}; // 322 is the number of SDLK down events
-static float tickTimer = 0.0;
-static SDL_FRect player_paddle;
-static SDL_FRect enemy_paddle;
+static std::unordered_map<SDL_Keycode, bool> keysDown {}; // Keeps track of all keys that are held down
+static float tickTimer {0.0f};                            // Keeps track of tick time to accurately call tick()
 
-namespace pong {
-    void init() {
+namespace Pong {
+    static SDL_FRect player_paddle {0.0f, 0.0f, paddle_width, paddle_height};
+    static SDL_FRect enemy_paddle  {0.0f, 0.0f, paddle_width, paddle_height};
+
+    void init()
+    {
         // Setup player paddle
-        player_paddle.w = PADDLE_WIDTH;
-        player_paddle.h = PADDLE_HEIGHT;
-        player_paddle.x = SCREEN_WIDTH / 8.0f;                         // Left x-pos
-        player_paddle.y = SCREEN_HEIGHT / 2.0f - PADDLE_HEIGHT / 2.0f; // Center y-pos
+        player_paddle.x = screen_width / 8.0f;                              // Left x-pos
+        player_paddle.y = screen_height / 2.0f - paddle_height / 2.0f;      // Center y-pos
 
         // Setup enemy paddle
-        enemy_paddle.w = PADDLE_WIDTH;
-        enemy_paddle.h = PADDLE_HEIGHT;
-        enemy_paddle.x = SCREEN_WIDTH - SCREEN_WIDTH / 8.0f - PADDLE_WIDTH; // Right x-pos
-        enemy_paddle.y = SCREEN_HEIGHT / 2.0f - PADDLE_HEIGHT / 2.0f;       // Center y-pos
+        enemy_paddle.x = screen_width - screen_width / 8.0f - paddle_width; // Right x-pos
+        enemy_paddle.y = screen_height / 2.0f - paddle_height / 2.0f;       // Center y-pos
     }
 
-    void input(const SDL_Event &event) {
+    void input(const SDL_Event &event)
+    {
         if (event.type == SDL_EVENT_KEY_DOWN) {
-            keysDown[event.key.key] = true;
+            keysDown[event.key.key] = true;  // Store true for key ID if held down
         } else if (event.type == SDL_EVENT_KEY_UP) {
-            keysDown[event.key.key] = false;
+            keysDown[event.key.key] = false; // Store false for key ID if up (let go)
         }
     }
 
-    static void tick() {
-        if (keysDown[SDLK_W] || keysDown[SDLK_UP]) {
-            player_paddle.y -= (PADDLE_SPEED * TICK_RATE);
+    static void tick()
+    {
+        if (keysDown[SDLK_W] || keysDown[SDLK_UP]) {   // Hold up
+            player_paddle.y -= (paddle_speed * tick_rate);
+        }
+        if (keysDown[SDLK_S] || keysDown[SDLK_DOWN]) { // Hold down
+            player_paddle.y += (paddle_speed * tick_rate);
         }
 
-        if (keysDown[SDLK_S] || keysDown[SDLK_DOWN]) {
-            player_paddle.y += (PADDLE_SPEED * TICK_RATE);
-        }
-
+        // Cap player's vertical position to be in bounds
         if (player_paddle.y < 0) {
             player_paddle.y = 0;
-        } else if (player_paddle.y + PADDLE_HEIGHT > SCREEN_HEIGHT) {
-            player_paddle.y = SCREEN_HEIGHT - PADDLE_HEIGHT;
+        } else if (player_paddle.y + paddle_height > screen_height) {
+            player_paddle.y = screen_height - paddle_height;
         }
     }
 
-    void update() {
+    void update()
+    {
         using namespace std::chrono;
         static auto previous = high_resolution_clock::now();
         
@@ -54,14 +57,15 @@ namespace pong {
 
         float deltaTime = time_span.count();
         tickTimer += deltaTime;
-        while (tickTimer >= TICK_RATE) {
+        while (tickTimer >= tick_rate) {
             tick();
-            tickTimer -= TICK_RATE;
+            tickTimer -= tick_rate;
         }
     }
 
-    void render(SDL_Renderer *renderer) {
-        SDL_RenderFillRect(renderer, &player_paddle);
-        SDL_RenderFillRect(renderer, &enemy_paddle);
+    void render(SDL_Renderer &renderer)
+    {
+        SDL_RenderFillRect(&renderer, &player_paddle);
+        SDL_RenderFillRect(&renderer, &enemy_paddle);
     }
 }
