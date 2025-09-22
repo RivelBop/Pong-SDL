@@ -12,7 +12,12 @@ namespace Pong {
     constexpr float paddle_width  {16.0f};
     constexpr float paddle_height {80.0f};
 
-    void init();                         // Initializes the game's elements
+    constexpr float ball_speed    {300.0f};
+    constexpr float ball_size     {16.0f};
+
+    constexpr float font_scale    {4.0f};
+
+    void init(bool resetScore = true);   // Initializes the game's elements
     void input(const SDL_Event &event);  // Simple input handling
     void update();                       // Updates the game's elements
     void render(SDL_Renderer &renderer); // Renders the game's elements
