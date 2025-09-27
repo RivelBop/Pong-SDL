@@ -1,7 +1,6 @@
 #include <unordered_map>
-#include <chrono>
-#include <cstdlib>
 #include <string>
+#include <cstdlib>
 #include "pong.h"
 
 static std::unordered_map<SDL_Keycode, bool> keys_down {}; // Keeps track of all keys that are held down
@@ -129,14 +128,11 @@ namespace Pong {
 
     void update()
     {
-        using namespace std::chrono;
-        static auto previous {high_resolution_clock::now()};
-        
-        auto current {high_resolution_clock::now()};
-        duration<float> time_span {duration_cast<duration<float>>(current - previous)};
+        static Uint64 previous {SDL_GetPerformanceCounter()};
+        Uint64 current {SDL_GetPerformanceCounter()};
+        float delta_time {(current - previous) / (float) SDL_GetPerformanceFrequency()};
         previous = current;
 
-        float delta_time {time_span.count()};
         tick_timer += delta_time;
         while (tick_timer >= tick_rate) {
             tick();
