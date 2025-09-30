@@ -104,20 +104,24 @@ namespace Pong {
         // Bounce ball if colliding with player
         if (ball.x > player_paddle.x + paddle_width / 2.0f && SDL_GetRectIntersectionFloat(&ball, &player_paddle, &collResult)) {
             ball_dir_x *= -1.0f;
+            play_pong_sound();
         }
 
         // Bounce ball if colliding with enemy
         if (ball.x + ball.w < enemy_paddle.x + paddle_width / 2.0f && SDL_GetRectIntersectionFloat(&ball, &enemy_paddle, &collResult)) {
             ball_dir_x *= -1.0f;
+            play_pong_sound();
         }
 
         // Ball goes off-screen (horizontally)
         if (ball.x < 0) {
             init(false);
             enemy_score_display = std::to_string(++enemy_score);
+            play_score_sound();
         } else if (ball.x + ball.w > screen_width) {
             init(false);
             player_score_display = std::to_string(++player_score);
+            play_score_sound();
         }
 
         // Restart game if someone wins

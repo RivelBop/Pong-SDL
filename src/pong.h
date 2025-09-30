@@ -21,6 +21,9 @@ namespace Pong {
     void input(const SDL_Event &event);  // Simple input handling
     void update();                       // Updates the game's elements
     void render(SDL_Renderer &renderer); // Renders the game's elements
+
+    void play_pong_sound();              // Play pong sound
+    void play_score_sound();             // Play score sound
 }
 
 #endif // PONG_H
