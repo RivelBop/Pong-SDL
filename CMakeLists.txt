@@ -18,6 +18,9 @@ add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 # This assumes the SDL_mixer source is available in vendored/SDL_mixer
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 
+# Copies asset folder into exported binary directories
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+
 # Create your game executable target as usual
 # Add files to executable here
 add_executable(PONG-SDL 
